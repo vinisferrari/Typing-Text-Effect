@@ -13,102 +13,94 @@
       align-items: center;
       height: 100vh;
       justify-content: center;
+      margin: 0;
     }
 
-    .container {
-      font-size: 40px;
+    .container-effect-text {
+      font-size: clamp(22px, 2.9vw, 46px);
       text-align: center;
       position: relative;
       display: flex;
       align-items: center;
     }
 
-    .effect-container {
+    .container-effect-text .effect-container {
       display: flex;
       font-family: 'Red Hat Display', sans-serif;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    .typing-text span,
-    .reveal-text {
+    .container-effect-text .typing-text span,
+    .container-effect-text .reveal-text {
       overflow: hidden;
     }
 
-    .typing-text {
+    .container-effect-text .typing-text {
       display: flex;
       align-items: center;
+      overflow: hidden;
     }
 
-    .typing-text span {
+    .container-effect-text .typing-text span {
       color: white;
-      border-right: 2px solid white;
-      /* Cursor effect */
-      animation: typing 4s steps(40, end) forwards, blink-caret 0.75s step-end;
+      border-right: 2px solid white; /* Cursor effect */
+      animation: typing 4s steps(40, end) forwards, blink-caret 0.75s step-end infinite; /* Animation for typing effect and blinking cursor */
       transition: color 1s ease-in-out;
     }
 
-    .container-text2 {
+    .container-effect-text .container-text2 {
       position: relative;
       overflow: hidden;
       font-weight: bold;
     }
 
-    .reveal-text {
+    .container-effect-text .reveal-text {
       display: flex;
       align-items: center;
       height: 100%;
-      color: #17c0fd;
-      /* White text color */
-      opacity: 0;
-      /* Hidden initially */
-      transition: opacity 1s ease-in-out;
-      /* Smooth reveal */
+      color: #17c0fd; /* Text color for revealed text */
+      opacity: 0; /* Initially hidden */
+      transition: opacity 1s ease-in-out; /* Smooth reveal transition */
     }
 
-    .reveal-background {
-      background-color: #17c0fd;
-      /* color background */
-      height: 100%;
-      /* Full height of container */
-      width: 0%;
-      /* Start with 0% width */
+    .container-effect-text .reveal-background {
+      background-color: #17c0fd; /* Background color for reveal effect */
+      height: 100%; /* Full height of the container */
+      width: 0%; /* Start with 0% width */
       position: absolute;
       top: 0;
       left: 0;
-      transform: translateX(0%);
-      transition: width 1s ease-in-out, transform 1s ease-in-out;
-      /* Smooth transition */
+      transform: translateX(0%); /* Initial position */
+      transition: width 1s ease-in-out, transform 1s ease-in-out; /* Smooth transition for width and transform */
     }
 
     @keyframes typing {
       from {
         width: 0;
       }
-
       to {
-        width: 16ch;
+        width: 16ch; /* Adjust to fit the text length */
       }
-
-      /* Adjust this value to fit your text length */
     }
 
     @keyframes blink-caret {
-
-      from,
-      to {
-        border-color: transparent;
+      from, to {
+        border-color: transparent; /* Invisible caret */
       }
-
       50% {
-        border-color: #17c0fd;
+        border-color: white; /* Visible caret */
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
+  <div class="container-effect-text">
     <div class="effect-container">
-      <div class="typing-text"><span>www.viniciusferrari.dev/</span>
+      <div class="typing-text">
+        <span>www.viniciusferrari.dev/</span>
       </div>
       <div class="container-text2">
         <div class="reveal-background"></div>
@@ -124,18 +116,41 @@
       const background = document.querySelector(".reveal-background");
       const revealText = document.querySelector(".reveal-text");
       const typingText = document.querySelector(".typing-text span");
+      const animationDuration = 10000; // Total duration of the completed animation cycle (typing + reveal)
 
-      // Show orange background and reveal blue text
-      setTimeout(() => {
-        background.style.width = "100%"; // Reveal the orange background
-        typingText.style.borderRight = "none"
-      }, 4000); //this time must be the same of transition in class typing-text span
+      function resetAnimation() {
+        // Reset the background and text opacity after the animation has completed
+        setTimeout(() => {
+          background.style.width = "0%"; // Collapse the reveal background
+          background.style.transform = "translateX(0%)"; // Reset transform position
+          revealText.style.opacity = 0; // Hide the reveal text
+          typingText.style.transition = "color 1s ease-in-out";
+        }, 9000); // Wait until the current animation cycle is completed before resetting
 
-      setTimeout(() => {
-        background.style.transform = "translateX(calc(100% + 0.5ch))"; // Hide the orange background
-        revealText.style.opacity = 1; // Reveal the blue text smoothly
-        typingText.style.color = "gray" //color class typing-text span after transition
-      }, 5000); // Delay the reveal of the blue text after the orange background disappears | this time must be the same of sum transition  orange background and it duration
+        // Apply the original animation
+        typingText.style.animation = "typing 4s steps(40, end) forwards, blink-caret 0.75s step-end infinite"; // Reapply typing and caret blink animations
+        typingText.style.borderRight = "2px solid"; // Reset the cursor effect
+        typingText.style.transition = "none";
+        typingText.style.color = "white"; // Reset the text color
+
+        // Start the reveal effect
+        setTimeout(() => {
+          typingText.style.animation = "none"; // Pause the typing animation during the reveal
+          background.style.width = "100%"; // Expand the reveal background
+          typingText.style.borderRight = "none"; // Hide the cursor effect
+        }, 4000); // Delay to match the typing animation duration
+
+        setTimeout(() => {
+          background.style.transform = "translateX(calc(100% + 0.5ch))"; // Slide out the reveal background
+          revealText.style.opacity = 1; // Show the reveal text
+          typingText.style.color = "gray"; // Change the text color after transition
+        }, 5000); // Delay to match the background transition duration
+      }
+
+      // Start the animation and set it to repeat indefinitely
+      resetAnimation();
+      setInterval(resetAnimation, animationDuration); // Repeat the animation cycle indefinitely
+
     });
   </script>
 </body>
