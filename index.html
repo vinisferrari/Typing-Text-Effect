@@ -142,6 +142,7 @@
 
         setTimeout(() => {
           background.style.transform = "translateX(calc(100% + 0.5ch))"; // Slide out the reveal background
+          typingText.style.transition = "color 1s ease-in-out";
           revealText.style.opacity = 1; // Show the reveal text
           typingText.style.color = "gray"; // Change the text color after transition
         }, 5000); // Delay to match the background transition duration
